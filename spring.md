@@ -36,7 +36,12 @@ A 객체가 B 객체를 멤버로 가질 때 A 객체는 B 객체에게 __의존
 
 <img src="./img/component_annotation.png"/>
 
-- @Component
-- @Controller
-- @Service
-- @Repository
+- 해당 그림의 어노테이션들은 모두 Bean 객체를 등록하는 역할을 하지만 쓰임새가 조금씩 다르다.<br/><br/>
+	- @Component<br/>
+		- 스프링이 관리하는 	컴포넌트를 나타내는 일반적인 타입이다. @Component 의 구체화 된 타입이 @Controller, @Service, @Repository 이다.<br/><br/>
+	- @Controller
+		- 해당 클래스를 MVC 모델의 컨트롤러로 인식하도록 해준다. 해당 어노테이션 아래에서만 @RequestMapping 과 같은 어노테이션을 사용할 수 있다.<br/><br/>
+	- @Service
+		- 해당 클래스를 비즈니스 로직을 처리하는 클래스로 인식하도록 해준다.<br/><br/>
+	- @Repository
+		- 해당 클래스를 데이터 접근 계층으로 인식하도록 해준다.
