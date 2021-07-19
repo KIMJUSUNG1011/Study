@@ -31,4 +31,12 @@ A 객체가 B 객체를 멤버로 가질 때 A 객체는 B 객체에게 __의존
 객체를 생성하고 객체 간의 관계를 설정하는 것에 대한 제어권이 개발자가 아닌 외부의 컨테이너에게 넘어간 것을 의미한다. 스프링에서는 __BeanFactory 인터페이스__ 를 구현하는 __ApplicationContext 구현체__ 가 외부 컨테이너의 역할을 담당한다.<br/><br/>
 
 ## 어노테이션을 활용한 Bean 객체 등록
+- ___@Component___ 어노테이션은 무엇이며 어떤 특징이 있는가?<br/><br/>
+@Component 어노테이션을 활용하면 Bean Configuration 파일에 Bean 을 따로 등록하지 않아도 된다. @Component 어노테이션을 활용해 등록된 클래스의 Bean 은 딱 한 번 등록된다(싱글톤). 반면에 @Bean 어노테이션을 활용해 등록된 클래스의 Bean 은 여러 번 등록될 수 있다. 일반적으로 개발자가 클래스의 코드를 수정할 수 있을 때 @Component 를 사용하고 수정할 수 없을 때 @Bean 을 사용한다.<br/><br/>
+
 <img src="./img/component_annotation.png"/>
+
+- @Component
+- @Controller
+- @Service
+- @Repository
