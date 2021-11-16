@@ -6,34 +6,36 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-#define N_SIZE 128
-
 void multiply();
 
 int main(void)
 {
 	pid_t pid;
 	int i, size, status;
-	char fname[N_SIZE];
 
 	for (i = 0; i < 21; i++) {
+
 		if ((pid = fork()) == 0) {
 
-			printf("%d : %d process begins\n", i, getpid());
+			printf("%-3d: %d process begins\n", i, getpid());
 
 			if (i >= 0 && i < 7) {
+				// 높은 nice 값을 주고, 일을 조금 시킴
 				setpriority(PRIO_PROCESS, 0, 10);
-				size = 400;
+				size = 300;
 			}
 			else if (i >= 7 && i < 14) {
+				// 중간 nice 값을 주고, 일을 적당히 시킴
 				setpriority(PRIO_PROCESS, 0, 0);
-				size = 500;
+				size = 400;
 			}
 			else {
-				setpriority(PRIO_PROCESS, 0, -15);
-				size = 700;
+				// 낮은 nice 값을 주고, 일을 많이 시킴
+				setpriority(PRIO_PROCESS, 0, -10);
+				size = 500;
 			}
 
+			// 작업 수행
 			multiply(size);
 
 			exit(0);
@@ -44,18 +46,21 @@ int main(void)
 		}
 	}
 
-	for (i = 0; i < 20; i++) {
+	for (i = 0; i < 21; i++) {
 		pid = wait(&status);
 		printf("%d process ends\n", pid);
 	}
 
+	printf("---------- All processes end ----------\n");
+
 	exit(0);
 }
 
+// 행렬 곱셈 연산
 void multiply(int size)
 {
-	long a[size][size], b[size][size], c[size][size];
-	long i, j, k, in;
+	int a[size][size], b[size][size], c[size][size];
+	int i, j, k;
 
 	for (i = 0; i < size; i++) {
 		for (j = 0; j < size; j++) {
