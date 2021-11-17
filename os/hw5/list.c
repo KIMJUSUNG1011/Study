@@ -126,3 +126,21 @@ Node *__get(int idx) {
 	return cur;
 }
 
+// 리스트 삭제
+void __delete_all() {
+
+	int i;
+	int __cnt = __get_cnt();
+	Node *cur;
+
+	for (i = 0; i < __cnt; i++) {
+		cur = tail->next;
+		free(tail);
+		tail = cur;
+	}
+
+	head = NULL;
+	tail = NULL;
+	cnt = 0;
+}
+

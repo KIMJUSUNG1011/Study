@@ -23,3 +23,4 @@ Node *__find(int p_num);
 void __remove(Node *node);
 void __update(Node *node, int p_num, int f_num, int hit_label);
 Node *__get(int idx);
+void __delete_all();
