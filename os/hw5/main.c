@@ -15,7 +15,9 @@ int get_ref_string(int fd, int *ref_string);
 void opt(int frame_num, int ref_num, int *ref_string);
 int is_hit(int p_num);
 int is_full(int frame_num);
+void update_frame(int *frame);
 void print_frame(int *frame, int frame_num);
+Node *get_victim(int cur, int frame_num, int ref_num, int *frame, int *ref_string);
 
 int main(void) {
 
@@ -34,15 +36,6 @@ int main(void) {
 	frame_num = get_frame_num(fd);
 	ref_num = get_ref_string(fd, ref_string);
 
-	/*
-	printf("frame_num : %d\n", frame_num);
-	printf("ref_num : %d\n", ref_num);
-
-	for (int i = 0; i < ref_num; i++) {
-		printf("%d ", ref_string[i]);
-	} printf("\n");
-	*/
-
 	opt(frame_num, ref_num, ref_string);
 
 	exit(0);
@@ -56,7 +49,7 @@ int main(void) {
 
 void opt(int frame_num, int ref_num, int *ref_string) {
 
-	int i, j;
+	int i;
 	int *frame = (int*)malloc(sizeof(int) * frame_num);
 
 	memset(frame, -1, sizeof(int) * frame_num);
@@ -65,6 +58,7 @@ void opt(int frame_num, int ref_num, int *ref_string) {
 
 		int p_num = ref_string[i];
 		int f_num = 0;
+		Node *target;
 
 		// hit 여부 체크
 		if (!is_hit(p_num)) {
@@ -73,17 +67,27 @@ void opt(int frame_num, int ref_num, int *ref_string) {
 		}
 
 		if (!is_full(frame_num)) {	// 교체 발생
-			get_victim(i, frame_num, ref_num, frame, ref_string);
+			target = get_victim(i, frame_num, ref_num, frame, ref_string);
+			if (target == NULL) {
+				fprintf(stderr, "get_victim error\n");
+				return;
+			}
+
+			// 교체될 노드의 f_num 을 저장
+			f_num = target->f_num;
+
+			// 교체될 노드를 리스트에서 삭제
+			__remove(target);
+
+			// 새로운 노드를 리스트에 저장
+			__add(p_num, f_num, -1);
+
 		} else {					// 교체가 발생하지 않음
 			f_num = __get_cnt() + 1;
 			__add(p_num, f_num, -1);
 		}
 
-		for (j = 0; j < __get_cnt(); j++) {
-			Node *cur = __get(j);
-			frame[cur->f_num - 1] = cur->p_num;
-		}
-
+		update_frame(frame);
 		print_frame(frame, frame_num);
 	}
 }
@@ -91,7 +95,7 @@ void opt(int frame_num, int ref_num, int *ref_string) {
 // 교체될 노드를 opt 방식으로 탐색
 Node *get_victim(int cur, int frame_num, int ref_num, int *frame, int *ref_string) {
 
-	int i, j, len, p_num, max = -1;
+	int i, j, len, pos, max = -1;
 
 	// ref_string 의 현재 위치에서 가장 멀리 떨어진,
 	// 즉 가장 오랫동안 사용되지 않을 p_num 을 탐색
@@ -105,7 +109,14 @@ Node *get_victim(int cur, int frame_num, int ref_num, int *frame, int *ref_strin
 			}
 			len++;
 		}
+
+		if (max < len) {
+			max = len;
+			pos = i;
+		}
 	}
+
+	return __find(frame[pos]);
 }
 
 // p_num 프로세스 hit 여부 확인 
@@ -126,6 +137,17 @@ int is_full(int frame_num) {
 		return 0;
 	} else {
 		return 1;
+	}
+}
+
+// 프레임 업데이트
+void update_frame(int *frame) {
+
+	int i ;
+
+	for (i = 0; i < __get_cnt(); i++) {
+		Node *cur = __get(i);
+		frame[cur->f_num - 1] = cur->p_num;
 	}
 }
 
