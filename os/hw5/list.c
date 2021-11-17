@@ -78,36 +78,6 @@ void __remove(Node *target) {
 	free(target);
 }
 
-// target 노드 업데이트
-void __update(Node *target, int p_num, int f_num, int hit_label) {
-
-	target->p_num = p_num;
-	target->f_num = f_num;
-	target->hit_label = hit_label;
-}
-
-// 리스트 출력
-void __print_all() {
-
-	int i;
-	Node *cur = tail;
-
-	if (cnt == 0) {
-		printf("print_all error : list is Empty\n");
-		return;
-	}
-
-	for (i = 0; i < cnt; i++) {
-		printf("(%d %d %d)", cur->p_num, cur->f_num, cur->hit_label);
-		if (i == cnt - 1) {
-			printf("\n");
-			break;
-		}
-		printf("->");
-		cur = cur->next;
-	}
-}
-
 // tail 을 기준으로 idx 의 위치에 있는 노드 리턴
 Node *__get(int idx) {
 
@@ -142,5 +112,27 @@ void __delete_all() {
 	head = NULL;
 	tail = NULL;
 	cnt = 0;
+}
+
+// 리스트 출력
+void __print_all() {
+
+	int i;
+	Node *cur = tail;
+
+	if (cnt == 0) {
+		printf("print_all error : list is Empty\n");
+		return;
+	}
+
+	for (i = 0; i < cnt; i++) {
+		printf("(%d %d %d)", cur->p_num, cur->f_num, cur->hit_label);
+		if (i == cnt - 1) {
+			printf("\n");
+			break;
+		}
+		printf("->");
+		cur = cur->next;
+	}
 }
 
