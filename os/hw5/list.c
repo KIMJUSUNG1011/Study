@@ -108,3 +108,21 @@ void __print_all() {
 	}
 }
 
+// tail 을 기준으로 idx 의 위치에 있는 노드 리턴
+Node *__get(int idx) {
+
+	if (idx < 0 || idx >= __get_cnt()) {
+		fprintf(stderr, "get error");
+		return NULL;
+	}
+
+	int i;
+	Node *cur = tail;
+
+	for (i = 0; i < idx; i++) {
+		cur = cur->next;
+	}
+
+	return cur;
+}
+
