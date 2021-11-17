@@ -16,7 +16,7 @@ void opt(int frame_num, int ref_num, int *ref_string);
 int is_hit(int p_num);
 int is_full(int frame_num);
 void update_frame(int *frame);
-void print_frame(int *frame, int frame_num);
+void print_frame(int time, int page_fault, int *frame, int frame_num);
 Node *get_victim(int cur, int frame_num, int ref_num, int *frame, int *ref_string);
 
 int main(void) {
@@ -27,6 +27,7 @@ int main(void) {
 
 	printf("Input file name : ");
 	scanf("%[^\n]s", fname);
+	printf("\n");
 
 	if ((fd = open(fname, O_RDONLY)) < 0) {
 		fprintf(stderr, "open error\n");
@@ -49,10 +50,23 @@ int main(void) {
 
 void opt(int frame_num, int ref_num, int *ref_string) {
 
-	int i;
+	int i, hit_num = 0;
 	int *frame = (int*)malloc(sizeof(int) * frame_num);
 
 	memset(frame, -1, sizeof(int) * frame_num);
+
+	// 출력 형식
+	printf("Used method : OPT\n");
+	printf("page reference string :");
+	for (i = 0; i < ref_num; i++) {
+		printf("%6d", ref_string[i]);
+	} printf("\n\n");
+	printf("%10s%5s", "frame", " "); 
+	for (i = 0; i < frame_num; i++) {
+		printf("%-7d", i + 1);
+	} 
+	printf("%-7s\n", "page fault");
+	printf("time\n");
 
 	for (i = 0; i < ref_num; i++) {
 
@@ -62,13 +76,15 @@ void opt(int frame_num, int ref_num, int *ref_string) {
 
 		// hit 여부 체크
 		if (!is_hit(p_num)) {
-			print_frame(frame, frame_num);
+			hit_num++;
+			print_frame(i + 1, 0, frame, frame_num);
 			continue;
 		}
 
 		if (!is_full(frame_num)) {	// 교체 발생
-			target = get_victim(i, frame_num, ref_num, frame, ref_string);
-			if (target == NULL) {
+
+			// 교체될 노드를 opt 방식으로 탐색
+			if ((target = get_victim(i, frame_num, ref_num, frame, ref_string)) == NULL) {
 				fprintf(stderr, "get_victim error\n");
 				return;
 			}
@@ -88,8 +104,10 @@ void opt(int frame_num, int ref_num, int *ref_string) {
 		}
 
 		update_frame(frame);
-		print_frame(frame, frame_num);
+		print_frame(i + 1, 1, frame, frame_num);
 	}
+
+	printf("Number of page faults : %d times\n", ref_num - hit_num);
 }
 
 // 교체될 노드를 opt 방식으로 탐색
@@ -152,16 +170,22 @@ void update_frame(int *frame) {
 }
 
 // 프레임 출력
-void print_frame(int *frame, int frame_num) {
+void print_frame(int time, int page_fault, int *frame, int frame_num) {
 
 	int i;
 
+	printf("%-15d", time);
+
 	for (i = 0; i < frame_num; i++) {
 		if (frame[i] != -1) {
-			printf("%d ", frame[i]);
+			printf("%-7d", frame[i]);
 		} else {
-			printf("  ");
+			printf("%-7s", " ");
 		}
+	} 
+
+	if (page_fault) {
+		printf("%-7s", "F");
 	} printf("\n");
 }
 
