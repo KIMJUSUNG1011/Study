@@ -34,9 +34,15 @@ void *ssu_thread(void *arg) {
 
     thread_index = *((int *)arg);
 
+    /*
     for (i = 0; i < 5; i++) {
         printf("%d : %d\n", thread_index, i);
         sleep(1);
+    }
+    */
+
+    while (1) {
+        ;
     }
 
     return NULL;

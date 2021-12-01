@@ -6,7 +6,8 @@
 void *ssu_loop1(void *);
 void *ssu_loop2(void *);
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex1 = pthread_mutex_initializer;
+pthread_mutex_t mutex2 = pthread_mutex_initializer;
 int shared_value;
 
 int main(void)
@@ -27,7 +28,7 @@ int main(void)
     pthread_join(tid1, (void *)&status);
     pthread_join(tid2, (void *)&status);
 
-    status = pthread_mutex_destroy(&mutex);
+    status = pthread_mutex_destroy(&mutex1);
     exit(0);
 }
 
@@ -36,10 +37,10 @@ void *ssu_loop1(void *arg)
     int i;
 
     for (i = 0; i < 10; i++) {
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&mutex1);
         printf("loop1 : %d\n", shared_value);
         shared_value++;
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutex1);
         sleep(1);
     }
 
@@ -51,12 +52,12 @@ void *ssu_loop2(void *arg)
     int i;
 
     for (i = 0; i < 10; i++) {
-        pthread_mutex_lock(&mutex);
+        pthread_mutex_lock(&mutex1);
         printf("loop2 : %d\n", shared_value);
         shared_value++;
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mutex1);
         sleep(1);
     }
 
     return NULL;
-}
+e
