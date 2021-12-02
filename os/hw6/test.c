@@ -3,21 +3,23 @@
 #include <unistd.h>
 #include <string.h>
 #include <pthread.h>
+
 #include "list.h"
 
 void *routine(void *);
 
-List *ready;            // 출발 대기 상태인 차량들
-List *process;          // 차로를 점유하고 있는 차량들
-int select_start_num;   // 선택된 차량의 출발점 번호
+List *ready;                                        // 출발 대기 상태인 차량들
+List *process;                                      // 차로를 점유하고 있는 차량들
+int select_start_num;                               // 선택된 차량의 출발점 번호
+int is_end;                                         // 출발점 스레드들의 종료를 관리하는 플래그
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;  // mutex 초기화
 
 int main(void)
 {
-    int i, j, tick;
-    Node *target;
+    int i, j, tick, status;
     pthread_t tids[4];
+    Node *target;
     int order[] = {4, 4, 3, 4, 1, 2, 2, 3, 3, 3};
     int nums[] = {1, 2, 3, 4};
     int vehicles[4];
@@ -28,6 +30,9 @@ int main(void)
 
     // 각 출발점에서 출발해 도착한 차량의 수를 저장
     memset(vehicles, 0, sizeof(vehicles));
+
+    // 스레드들의 루프 관리
+    is_end = 0;
 
     // 1번 출발점 스레드 생성
     if (pthread_create(&tids[0], NULL, routine, (void *)&nums[0]) != 0) {
@@ -129,6 +134,10 @@ int main(void)
             printf("Passed Vehicle\nCar");
             printf("\nWaiting Vehicle\nCar");
             printf("\n===================================\n");
+
+            // 출발점 스레드들을 종료시킴
+            is_end = 1;
+
             break;
         }
     }
@@ -138,6 +147,11 @@ int main(void)
         printf("P%d : %d times\n", i + 1, vehicles[i]);
     }
     printf("Total time : %d ticks\n", tick);
+
+    // 출발점 스레드 종료 대기
+    for (i = 0; i < 4; i++) {
+        pthread_join(tids[i], (void *)&status);
+    }
 
     exit(0);
 }
@@ -149,7 +163,7 @@ void *routine(void *arg)
 
     num = *((int *)arg);
 
-    while (1) {
+    while (!is_end) {
 
         // num 번 출발점의 차량에 대한 제어권을 가져옴
         if (num == select_start_num) {
