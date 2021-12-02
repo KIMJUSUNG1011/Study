@@ -1,10 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <pthread.h>
-
 #include "list.h"
+#include <unistd.h>
+#include <pthread.h>
 
 void *routine(void *);
 

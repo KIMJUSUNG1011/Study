@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall
 TARGET = a.out
-OBJECTS = list.o test.o
+OBJECTS = list.o main.o
 
 all : $(TARGET)
 
