@@ -1,4 +1,5 @@
 #include "list.h"
+
 #include <unistd.h>
 #include <pthread.h>
 
@@ -56,12 +57,13 @@ int main(void)
 
     while (1) {
 
-        // 해당 순서의 차량을 ready 리스트에 삽입
-        if (i < num_of_vehicles) {
-            __add(order[i++], -1, ready);
-        }
+		// 해당 순서의 차량을 ready 리스트에 삽입
+		if (i < num_of_vehicles) {
+			__add(order[i++], -1, ready);
+		}
 
-        // ready 리스트에서 랜덤하게 하나의 차량을 선택
+		// ready 리스트에서 랜덤하게 하나의 차량을 선택
+		// 리스트가 비어있을 경우 NULL 을 리턴
         target = __get_random(ready);
 
         // 제어권이 해당 출발점 스레드로 넘어감
