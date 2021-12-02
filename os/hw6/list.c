@@ -46,7 +46,6 @@ Node *__find(int start_num, List *list) {
 Node *__get(int idx, List *list) {
 
 	if (idx < 0 || idx >= __get_cnt(list)) {
-		fprintf(stderr, "get error");
 		return NULL;
 	}
 
@@ -62,7 +61,12 @@ Node *__get(int idx, List *list) {
 
 // 리스트에서 랜덤하게 하나의 노드를 선택
 Node *__get_random(List *list) {
-    return NULL;
+
+    int idx;
+
+    idx = (int)rand() % __get_cnt(list);
+
+    return __get(idx, list);
 }
 
 // target 노드 삭제
