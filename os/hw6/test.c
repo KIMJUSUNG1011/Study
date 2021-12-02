@@ -61,8 +61,6 @@ int main(void)
     // 출발 대기인 차량 중 출발할 차량을 랜덤하게 선택하기 위한 난수 생성
     srand((unsigned int)time(NULL));
 
-    sleep(1);
-
     i = 0;
     tick = 0;
 
