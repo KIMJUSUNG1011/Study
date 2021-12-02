@@ -12,6 +12,8 @@ int main(void)
     int thread2 = 2;
     int status;
 
+    int a = 10;
+
     if (pthread_create(&tid1, NULL, ssu_thread, (void *)&thread1) != 0) {
         fprintf(stderr, "pthread_create error\n");
         exit(1);
@@ -23,7 +25,10 @@ int main(void)
     }
 
     pthread_join(tid1, (void *)&status);
-    // pthread_join(tid2, (void *)&status);
+    pthread_join(tid2, (void *)&status);
+
+    printf("a : %d\n", a);
+
     exit(0);
 }
 
@@ -34,15 +39,9 @@ void *ssu_thread(void *arg) {
 
     thread_index = *((int *)arg);
 
-    /*
     for (i = 0; i < 5; i++) {
         printf("%d : %d\n", thread_index, i);
         sleep(1);
-    }
-    */
-
-    while (1) {
-        ;
     }
 
     return NULL;

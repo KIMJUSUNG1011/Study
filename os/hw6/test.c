@@ -17,13 +17,27 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;  // mutex 초기화
 
 int main(void)
 {
-    int i, j, tick, status;
+    int i, j, tick, status, num_of_vehicles;
     pthread_t tids[4];
     Node *target;
-    int order[] = {4, 4, 3, 4, 1, 2, 2, 3, 3, 3};
+    int *order;
     int nums[] = {1, 2, 3, 4};
     int vehicles[4];
 
+    srand((unsigned int)time(NULL));
+
+    // 입력 양식
+    printf("Total number of vehicles : ");
+    scanf("%d", &num_of_vehicles);
+    order = malloc(sizeof(int) * num_of_vehicles);
+
+    printf("Start point : ");
+    for (i = 0; i < num_of_vehicles; i++) {
+        int num = (int)rand() % 4 + 1;
+        order[i] = num;
+        printf("%d ", num);
+    } printf("\n");
+ 
     // ready, process 리스트 초기화
     ready = malloc(sizeof(List));
     process = malloc(sizeof(List));
@@ -58,16 +72,13 @@ int main(void)
         exit(1);
     }
 
-    // 출발 대기인 차량 중 출발할 차량을 랜덤하게 선택하기 위한 난수 생성
-    srand((unsigned int)time(NULL));
-
     i = 0;
     tick = 0;
 
     while (1) {
 
         // 해당 순서의 차량을 ready 리스트에 삽입
-        if (i < 10) {
+        if (i < num_of_vehicles) {
             __add(order[i++], -1, ready);
         }
 
@@ -140,11 +151,19 @@ int main(void)
         }
     }
 
+    // 최종 결과 출력
     printf("Number of vehicles passed from each start point\n");
     for (i = 0; i < 4; i++) {
         printf("P%d : %d times\n", i + 1, vehicles[i]);
     }
     printf("Total time : %d ticks\n", tick);
+
+    // 자원 해제
+    __delete_all(ready);
+    __delete_all(process);
+    free(ready);
+    free(process);
+    free(order);
 
     // 출발점 스레드 종료 대기
     for (i = 0; i < 4; i++) {
@@ -167,6 +186,7 @@ void *routine(void *arg)
         if (num == select_start_num) {
 
             int flag;
+            Node *target;
 
             pthread_mutex_lock(&mutex);
             // printf("%d thread is selected\n", num);
@@ -180,8 +200,6 @@ void *routine(void *arg)
             // 즉, num 번 출발점의 차량이 출발 가능한 경우
             if (!flag) {
 
-                Node *target;
-
                 // 해당 차량을 ready 리스트에서 삭제
                 target = __find(num, ready);
                 __remove(target, ready);
@@ -194,6 +212,8 @@ void *routine(void *arg)
             pthread_mutex_unlock(&mutex);
         }
     }
+
+    pthread_exit(NULL);
 
     return NULL;
 }
