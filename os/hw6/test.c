@@ -71,8 +71,6 @@ int main(void)
         // ready 리스트에서 랜덤하게 하나의 차량을 선택
         target = __get_random(ready);
 
-        printf("tick : %d", ++tick);
-
         // 제어권이 해당 출발점 스레드로 넘어감
         if (target != NULL) {
             select_start_num = target->start_num;
@@ -83,20 +81,23 @@ int main(void)
         // 제어권이 다시 main 스레드로 넘어옴
         pthread_mutex_lock(&mutex);
 
-        // process 리스트를 업데이트 시킴으로서
+        // process 리스트를 업데이트(time = time - 1) 시킴으로서
         // 도로에 있는 모든 차량들을 진행시킴
         for (j = 0; j < __get_cnt(process); j++) {
             target = __get(j, process);
             (target->time)--;
         }
 
+        // 진행사항 출력
+        printf("tick : %d", ++tick);
         printf("\n===================================\n");
         printf("Passed Vehicle\nCar ");
+
+        // 교차로를 빠져나간 차량 출력
         for (j = 0; j < __get_cnt(process); j++) {
 
             target = __get(j, process);
 
-            // 교차로를 빠져나간 차량
             if (target->time == 0) {
 
                 printf("%d ", target->start_num);
@@ -109,6 +110,7 @@ int main(void)
             }
         }
 
+        // 출발 대기중인 차량 출력
         printf("\nWaiting Vehicle\nCar ");
         for (j = 0; j < __get_cnt(ready); j++) {
 
@@ -120,6 +122,7 @@ int main(void)
 
         pthread_mutex_unlock(&mutex);
 
+        // 진행이 완료되면 루프 탈출
         if (__get_cnt(ready) == 0 && __get_cnt(process) == 0) {
             printf("tick : %d", ++tick);
             printf("\n===================================\n");
