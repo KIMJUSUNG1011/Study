@@ -18,12 +18,13 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;  // mutex 초기화
 int main(void)
 {
     int i, j, tick, status, num_of_vehicles;
+    int *order;                                     // 출발점의 순서를 저장
+    int vehicles[4] = {0,};                         // 각 출발점에서 출발해 도착한 차량의 수를 저장
+    int thread_index[4] = {0,};                     // 각 스레드의 인덱스 번호를 저장
     pthread_t tids[4];
     Node *target;
-    int *order;
-    int nums[] = {1, 2, 3, 4};
-    int vehicles[4];
 
+    // 난수 생성
     srand((unsigned int)time(NULL));
 
     // 입력 양식
@@ -33,43 +34,25 @@ int main(void)
 
     printf("Start point : ");
     for (i = 0; i < num_of_vehicles; i++) {
-        int num = (int)rand() % 4 + 1;
-        order[i] = num;
-        printf("%d ", num);
+        j = (int)rand() % 4 + 1;
+        order[i] = j;
+        printf("%d ", j);
     } printf("\n");
  
-    // ready, process 리스트 초기화
+    // ready, process 리스트 생성
     ready = malloc(sizeof(List));
     process = malloc(sizeof(List));
 
-    // 각 출발점에서 출발해 도착한 차량의 수를 저장
-    memset(vehicles, 0, sizeof(vehicles));
-
-    // 스레드들의 루프 관리
+    // 스레드들의 종료 관리
     is_end = 0;
 
-    // 1번 출발점 스레드 생성
-    if (pthread_create(&tids[0], NULL, routine, (void *)&nums[0]) != 0) {
-        fprintf(stderr, "pthread_create error\n");
-        exit(1);
-    }
-
-    // 2번 출발점 스레드 생성
-    if (pthread_create(&tids[1], NULL, routine, (void *)&nums[1]) != 0) {
-        fprintf(stderr, "pthread_create error\n");
-        exit(1);
-    }
-
-    // 3번 출발점 스레드 생성
-    if (pthread_create(&tids[2], NULL, routine, (void *)&nums[2]) != 0) {
-        fprintf(stderr, "pthread_create error\n");
-        exit(1);
-    }
-
-    // 4번 출발점 스레드 생성
-    if (pthread_create(&tids[3], NULL, routine, (void *)&nums[3]) != 0) {
-        fprintf(stderr, "pthread_create error\n");
-        exit(1);
+    // 4개의 출발점 스레드 생성
+    for (i = 0; i < 4; i++) {
+        thread_index[i] = i + 1;
+        if (pthread_create(&tids[i], NULL, routine, (void *)&thread_index[i]) != 0) {
+            fprintf(stderr, "pthread_create error\n");
+            exit(1);
+        }
     }
 
     i = 0;
@@ -165,6 +148,9 @@ int main(void)
     free(process);
     free(order);
 
+    // mutex 해제
+    status = pthread_mutex_destroy(&mutex);
+
     // 출발점 스레드 종료 대기
     for (i = 0; i < 4; i++) {
         pthread_join(tids[i], (void *)&status);
@@ -173,6 +159,7 @@ int main(void)
     exit(0);
 }
 
+// 출발점 스레드 루틴
 void *routine(void *arg)
 {
     // 출발점 번호
@@ -189,7 +176,6 @@ void *routine(void *arg)
             Node *target;
 
             pthread_mutex_lock(&mutex);
-            // printf("%d thread is selected\n", num);
 
             // num 번 출발점의 차량이 출발할 수 있는 지 확인
             flag = (__find(num, process) != NULL) 

@@ -6,8 +6,8 @@
 void *ssu_loop1(void *);
 void *ssu_loop2(void *);
 
-pthread_mutex_t mutex1 = pthread_mutex_initializer;
-pthread_mutex_t mutex2 = pthread_mutex_initializer;
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
 int shared_value;
 
 int main(void)
@@ -60,4 +60,5 @@ void *ssu_loop2(void *arg)
     }
 
     return NULL;
-e
+}
+
