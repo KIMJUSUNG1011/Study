@@ -59,14 +59,16 @@ Node *__get(int idx, List *list) {
 	return cur;
 }
 
-// 리스트에서 랜덤하게 하나의 노드를 선택
+// 리스트에서 랜덤하게 하나의 노드를 선택해서 리턴
 Node *__get_random(List *list) {
 
-    int idx;
+	int cnt = __get_cnt(list);
 
-    idx = (int)rand() % __get_cnt(list);
+	if (cnt == 0) {
+		return NULL;
+	}
 
-    return __get(idx, list);
+    return __get((int)rand() % cnt, list);
 }
 
 // target 노드 삭제

@@ -1,12 +1,12 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -lpthread
 TARGET = a.out
 OBJECTS = list.o main.o
 
 all : $(TARGET)
 
 $(TARGET) : $(OBJECTS)
-	$(CC) $(CFALGS) -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS)   
 
 clean:
 	rm *.o a.out
