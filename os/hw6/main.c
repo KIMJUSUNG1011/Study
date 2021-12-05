@@ -72,8 +72,8 @@ int main(void)
 
         sleep(1);
 
-        // 제어권이 다시 main 스레드로 넘어옴
-        pthread_mutex_lock(&mutex);
+		// 제어권이 다시 main 스레드로 넘어옴
+		pthread_mutex_lock(&mutex);
 
         // process 리스트를 업데이트(time = time - 1) 시킴으로서
         // 도로에 있는 모든 차량들을 진행시킴
@@ -172,6 +172,7 @@ void *routine(void *arg)
             int flag;
             Node *target;
 
+			// 임계 영역인 process, ready 리스트에 접근하므로 lock 획득 후 진입
             pthread_mutex_lock(&mutex);
 
             // num 번 출발점의 차량이 출발할 수 있는 지 확인
